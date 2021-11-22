@@ -2,8 +2,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 import type { QuestionInterface } from "../../@types/question";
-import useApp from "../../hooks/useApp";
 import Alternative from "../../components/Alternative/Alternative";
+
+import sort from "../../utils/sort";
 
 const letters = ["A", "B", "C", "D"];
 
@@ -14,7 +15,11 @@ interface QuestionProps {
 
 const Question = (props: QuestionProps) => {
   const { question, onResponse } = props;
-  const { quantity } = useApp();
+
+  const questions = sort([
+    ...question.incorrect_answers,
+    question.correct_answer,
+  ]);
 
   return (
     <Box
@@ -32,17 +37,12 @@ const Question = (props: QuestionProps) => {
         {question.question}
       </Typography>
       <>
-        <Alternative
-          isRight
-          text={question.correct_answer}
-          letter={letters[0]}
-          onClick={() => onResponse(question.correct_answer)}
-        />
-        {question.incorrect_answers.map((alternative, k) => (
+        {questions.map((alternative, k) => (
           <Alternative
+            isRight={alternative === question.correct_answer}
             key={k}
             text={alternative}
-            letter={letters[k + 1]}
+            letter={letters[k]}
             onClick={() => onResponse(alternative)}
           />
         ))}
